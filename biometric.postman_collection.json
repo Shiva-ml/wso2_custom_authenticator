@@ -1,0 +1,309 @@
+{
+	"info": {
+		"_postman_id": "1e0bd049-0bea-4987-9c04-fb9a2ebce98c",
+		"name": "biometric",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "36968234"
+	},
+	"item": [
+		{
+			"name": "mock server check",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "shiva",
+							"type": "text"
+						},
+						{
+							"key": "passcode",
+							"value": "1234",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost:8081/users/verify-creds"
+			},
+			"response": []
+		},
+		{
+			"name": "register client",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46YWRtaW4="
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"client_name\": \"playground_4\",\"grant_types\": [\"authorization_code\",\"password\"], \"redirect_uris\": [\"http://localhost:8080/playground2/oauth2client\"],\"ext_param_client_id\":\"pest_client_id0001\",\"ext_param_client_secret\":\"pest_client_secret0001\" }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://localhost:9443/api/identity/oauth2/dcr/v1.1/register"
+			},
+			"response": []
+		},
+		{
+			"name": "/authorize",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var flowId = pm.response.json().flowId;\r",
+							"pm.collectionVariables.set(\"flowId\",flowId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "pest_client_secret0001",
+						"username": "pest_client_id0001"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "pest_client_id0001",
+							"type": "text"
+						},
+						{
+							"key": "response_type",
+							"value": "code",
+							"type": "text"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://localhost:8081",
+							"type": "text"
+						},
+						{
+							"key": "state",
+							"value": "logpg",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "openid",
+							"type": "text"
+						},
+						{
+							"key": "response_mode",
+							"value": "direct",
+							"type": "text"
+						},
+						{
+							"key": "code_challenge",
+							"value": "CxwRu4MpZEFw_qrm-FzQYM7J6Odqx0w8hrE7T2ukLYI",
+							"type": "text"
+						},
+						{
+							"key": "code_challenge_method",
+							"value": "S256",
+							"type": "text"
+						}
+					]
+				},
+				"url": "https://localhost:9443/oauth2/authorize/"
+			},
+			"response": []
+		},
+		{
+			"name": "/authn",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var code = pm.response.json().authData.code;\r",
+							"pm.collectionVariables.set(\"code\",code);\r",
+							"\r",
+							"var flowId = pm.response.json().flowId;\r",
+							"pm.collectionVariables.set(\"flowId\",flowId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "pest_client_secret0001",
+						"username": "pest_client_id0001"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"flowId\": \"{{flowId}}\",\r\n    \"selectedAuthenticator\": {\r\n        \"authenticatorId\": \"U2FtcGxlTG9jYWxBdXRoZW50aWNhdG9yOkxPQ0FM\",\r\n        \"params\": {\r\n            \"username\": \"john\",\r\n            \"passcode\": \"123\"\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://localhost:9443/oauth2/authn"
+			},
+			"response": []
+		},
+		{
+			"name": "/authn Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var code = pm.response.json().authData.code;\r",
+							"pm.collectionVariables.set(\"code\",code);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "pest_client_secret0001",
+						"username": "pest_client_id0001"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"flowId\": \"{{flowId}}\",\r\n    \"selectedAuthenticator\": {\r\n        \"authenticatorId\": \"QmFzaWNBdXRoZW50aWNhdG9yOkxPQ0FM\",\r\n        \"params\": {\r\n            \"username\": \"john\",\r\n            \"password\": \"Testuser@1234\"\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://localhost:9443/oauth2/authn"
+			},
+			"response": []
+		},
+		{
+			"name": "token",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "pest_client_secret0001",
+						"username": "pest_client_id0001"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "pest_client_id0001",
+							"type": "text"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://localhost:8081",
+							"type": "text"
+						},
+						{
+							"key": "code",
+							"value": "{{code}}",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "authorization_code",
+							"type": "text"
+						},
+						{
+							"key": "code_verifier",
+							"value": "sdsfghjklkuytr3456u76543regthf",
+							"type": "text"
+						}
+					]
+				},
+				"url": "https://localhost:9443/oauth2/token"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "flowId",
+			"value": ""
+		},
+		{
+			"key": "code",
+			"value": ""
+		}
+	]
+}
